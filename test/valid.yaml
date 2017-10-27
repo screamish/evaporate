@@ -22,3 +22,7 @@ Stack2:
       aws-external-id: "${hash.evaporate.yaml}"
     env2:
       aws-external-id: "${stack.myStack.output.myOutput}"
+
+StackWithPinnedRegion:
+  template-path: "template.json"
+  region: us-east-1
