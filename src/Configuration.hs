@@ -40,12 +40,12 @@ data Command =
   | Upsert
   deriving (Show, Eq)
 
-data Options = Options { command         :: Command
-                       , stackNameOption :: Maybe StackName
-                       , isDryRun        :: Bool
-                       , logLevel        :: LogLevel
-                       , onCreateFailure :: CFN.OnFailure
-                       , configFilePath  :: FilePath }
+data Options = Options { _optCommand         :: Command
+                       , _optStackNameOption :: Maybe StackName
+                       , _optIsDryRun        :: Bool
+                       , _optLogLevel        :: LogLevel
+                       , _optOnCreateFailure :: CFN.OnFailure
+                       , _optConfigFilePath  :: FilePath }
 
 loadConfiguration :: IO Options
 loadConfiguration =

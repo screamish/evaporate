@@ -86,22 +86,22 @@ exceptionHandler logLevel e = do
 execute :: Options -> IO ()
 execute Options{..} = do
   updateGlobalLogger "EvaporateLogger" (setLevel INFO)
-  amazonLogger      <- customLogger logLevel stdout ["[Await"]
+  amazonLogger      <- customLogger _optLogLevel stdout ["[Await"]
   awsEnv            <- newEnv Discover
                        <&> envLogger .~ amazonLogger
-  stackDescriptions <- getStackParameters configFilePath
+  stackDescriptions <- getStackParameters _optConfigFilePath
   systemEnv         <- HashMap.fromList . fmap (both pack) <$> getEnvironment
-  let context = Context systemEnv mempty onCreateFailure mempty awsEnv
-  handle (exceptionHandler logLevel) $ runResourceT . runAWST context $ do
+  let context = Context systemEnv mempty _optOnCreateFailure mempty awsEnv
+  handle (exceptionHandler _optLogLevel) $ runResourceT . runAWST context $ do
     awsAccountID <- getAccountID
     stackDependencyGraph <- makeStackDependencyGraph stackDescriptions awsAccountID
     orderedStackDescriptions <- determineStackOrdering stackDependencyGraph
     logEvaporate . logMain . LogParameters
-      command orderedStackDescriptions awsAccountID $ awsEnv ^. envRegion
-    if isDryRun then
+      _optCommand orderedStackDescriptions awsAccountID $ awsEnv ^. envRegion
+    if _optIsDryRun then
       logEvaporate "Dry run enabled. No commands will be executed."
     else
-      void $ processStacks command awsAccountID orderedStackDescriptions stackNameOption
+      void $ processStacks _optCommand awsAccountID orderedStackDescriptions _optStackNameOption
 
 processStacks :: forall m. (AWSConstraint Context m, MonadBaseControl IO m)
               => Command
